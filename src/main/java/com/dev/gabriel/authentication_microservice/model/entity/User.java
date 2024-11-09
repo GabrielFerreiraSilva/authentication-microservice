@@ -2,11 +2,17 @@ package com.dev.gabriel.authentication_microservice.model.entity;
 
 import com.dev.gabriel.authentication_microservice.model.enums.UserRole;
 import jakarta.persistence.*;
+import lombok.*;
 
 import java.util.UUID;
 
 @Entity
 @Table(name = "tb_user")
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@Builder
 public class User {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)

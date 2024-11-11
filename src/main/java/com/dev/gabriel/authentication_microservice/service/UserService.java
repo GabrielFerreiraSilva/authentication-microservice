@@ -4,6 +4,7 @@ import com.dev.gabriel.authentication_microservice.consumer.dto.NewUserRegistere
 import com.dev.gabriel.authentication_microservice.model.entity.User;
 import com.dev.gabriel.authentication_microservice.model.enums.UserRole;
 import com.dev.gabriel.authentication_microservice.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +15,7 @@ import java.util.UUID;
 public class UserService {
   private final UserRepository userRepository;
 
+  @Transactional
   public void registerUser(NewUserRegisteredMessage message) {
     if (this.userRepository.existsByEmail(message.email())) {
       throw new IllegalArgumentException("This email is already registered");

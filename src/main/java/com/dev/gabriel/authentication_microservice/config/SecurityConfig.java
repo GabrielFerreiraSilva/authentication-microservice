@@ -54,6 +54,8 @@ public class SecurityConfig {
                 authorize
                     .requestMatchers(HttpMethod.POST, "/api/authentication/login")
                     .permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/authentication/refresh")
+                    .permitAll()
                     .anyRequest()
                     .authenticated())
         .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))

@@ -2,6 +2,8 @@ package com.dev.gabriel.authentication_microservice.service;
 
 import com.dev.gabriel.authentication_microservice.controller.dto.LoginRequestDto;
 import com.dev.gabriel.authentication_microservice.controller.dto.LoginResponseDto;
+import com.dev.gabriel.authentication_microservice.controller.dto.RefreshTokenRequest;
+import com.dev.gabriel.authentication_microservice.model.entity.RefreshToken;
 import com.dev.gabriel.authentication_microservice.model.entity.User;
 import com.dev.gabriel.authentication_microservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -58,5 +60,23 @@ public class LoginService {
     String refreshToken = this.refreshTokenService.createRefreshToken(user);
 
     return new LoginResponseDto(jwt.getTokenValue(), jwt.getExpiresAt(), refreshToken);
+  }
+
+  public LoginResponseDto refreshToken(RefreshTokenRequest request) {
+    RefreshToken validatedRefreshToken =
+        this.refreshTokenService.validateRefreshToken(request.refreshToken());
+    User user = validatedRefreshToken.getUser();
+
+    JwtClaimsSet claims =
+        JwtClaimsSet.builder()
+            .issuer(this.tokenIssuer)
+            .subject(user.getId().toString())
+            .expiresAt(Instant.now().plusSeconds(this.tokenDurationSeconds))
+            .issuedAt(Instant.now())
+            .claim("role", user.getRole())
+            .build();
+
+    Jwt jwt = jwtEncoder.encode(JwtEncoderParameters.from(claims));
+    return new LoginResponseDto(jwt.getTokenValue(), jwt.getExpiresAt(), request.refreshToken());
   }
 }

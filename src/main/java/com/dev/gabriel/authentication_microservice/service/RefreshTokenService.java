@@ -35,6 +35,7 @@ public class RefreshTokenService {
     return refreshToken.getToken();
   }
 
+  @Transactional
   public RefreshToken validateRefreshToken(String token) {
     RefreshToken refreshToken =
         this.refreshTokenRepository

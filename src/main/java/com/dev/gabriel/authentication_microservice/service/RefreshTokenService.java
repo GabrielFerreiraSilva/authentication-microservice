@@ -6,6 +6,7 @@ import com.dev.gabriel.authentication_microservice.repository.RefreshTokenReposi
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -32,5 +33,19 @@ public class RefreshTokenService {
 
     this.refreshTokenRepository.save(refreshToken);
     return refreshToken.getToken();
+  }
+
+  public RefreshToken validateRefreshToken(String token) {
+    RefreshToken refreshToken =
+        this.refreshTokenRepository
+            .findByToken(token)
+            .orElseThrow(() -> new BadCredentialsException("Invalid refresh token"));
+
+    if (refreshToken.getExpiresAt().isBefore(Instant.now())) {
+      this.refreshTokenRepository.delete(refreshToken);
+      throw new BadCredentialsException("Refresh token expired");
+    }
+
+    return refreshToken;
   }
 }
